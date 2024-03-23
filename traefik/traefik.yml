@@ -1,0 +1,36 @@
+## Static configuration
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: json
+  bufferingSize: 100
+
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+  file:
+    directory: ./etc/traefik/dynamic
+    watch: true
+
+certificatesResolvers:
+  le:
+    acme:
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      storage: acme.json
+      keyType: 'EC384'
+      email: "hostmaster@domain.tld"
+      tlsChallenge: {}
+  le-staging:
+    acme:
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      storage: acme.json
+      keyType: 'EC384'
+      email: "hostmaster@domain.tld"
+      tlsChallenge: {}

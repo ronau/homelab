@@ -1,0 +1,63 @@
+version: "3.8"
+
+volumes:
+  appbase:
+    name: nextcloud-appbase
+    external: true
+  config:
+    name: nextcloud-config
+    external: true
+  data:
+    name: nextcloud-data
+    external: true
+  caddydata:
+    name: nextcloud-caddydata
+  
+networks:
+  mariadb-network:
+    external: true
+  proxy-network:
+    external: true
+
+services:
+  ncredis:
+    image: redis:alpine
+    restart: unless-stopped
+  
+  ncapp:
+    image: nextcloud:28-fpm-alpine
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - appbase:/var/www/html
+      - config:/var/www/html/config
+      - data:/var/www/data
+      - ./phpfpm-accesslog-format.conf:/usr/local/etc/php-fpm.d/zz-logformat.conf
+    networks:
+      - default
+      - mariadb-network
+    environment:
+      - REDIS_HOST=ncredis
+      - TRUSTED_PROXIES=192.168.0.0/16 172.16.0.0/12
+      - PHP_MEMORY_LIMIT=1024M
+      - PHP_UPLOAD_LIMIT=1024M
+    depends_on:
+      - ncredis
+
+  ncweb:
+    image: caddy:2.7
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - appbase:/var/www/html:ro
+      - config:/var/www/html/config:ro
+      - caddydata:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./proxy_ca_root.crt:/etc/ssl/certs/proxy_ca_root.crt:ro
+    networks:
+      - default
+      - proxy-network
+    depends_on:
+      - ncapp

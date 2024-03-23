@@ -1,0 +1,11 @@
+.DS_Store
+
+# general
+*.env
+!*.sample.env
+
+# IDEs and editors
+.vscode
+
+# traefik
+traefik/acme.json

@@ -1,0 +1,15 @@
+## Dynamic configuration
+
+tcp:
+  routers:
+    generic-tcp80:
+      entryPoints:
+        - "web"
+      rule: "HostSNI(`*`)"
+      service: "tcp-anotherhost-80"
+
+  services:
+    tcp-anotherhost-80:
+      loadBalancer:
+        servers:
+          - address: "anotherhost:80"

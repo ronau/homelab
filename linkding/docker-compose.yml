@@ -1,0 +1,23 @@
+version: "3.8"
+
+volumes:
+  ld-data:
+    name: linkding-data
+    external: true
+
+networks:
+  proxy-network:
+    external: true
+
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy-network
+    env_file:
+      - linkding.env
+    volumes:
+      - ld-data:/etc/linkding/data

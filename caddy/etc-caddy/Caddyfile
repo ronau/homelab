@@ -1,0 +1,53 @@
+{
+	# debug
+	# admin 0.0.0.0:2019	# use only if you need to access the config API from everywhere(!!)
+	email hostmaster@domain.tld
+
+	# auto_https disable_redirects    # use only for testing and debugging!
+}
+
+proxy {
+	acme_server
+	tls internal
+}
+
+# For testing only (HTTPS)
+# checking the reverse proxy functionality
+https://localhost {
+	tls internal
+
+	respond / "Hello secured World!"
+
+	reverse_proxy /8001 http://anotherhost:8001 {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+	}
+}
+
+# For testing only (HTTP)
+# return something if we call the host by its local hostname
+http://localhost {
+	respond "Hello unsecured World!"
+}
+
+# Nextcloud
+cloud.domain.tld {
+	header Strict-Transport-Security max-age=15552000;    # enable HSTS (w/o preload!)
+	reverse_proxy https://ncweb {
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		transport http {
+			# Adding this option to trust the root cert from the internal PKI
+			# (used by the internal ACME server). Normally, Caddy tries to add
+			# this cert to the system's trust store automatically. However, 
+			# there seems to be an issue so that this is not working as it should.
+			# See https://caddy.community/t/caddy-in-docker-container-does-not-trust-its-own-root-ca-certificate-automatically/13671
+			# So to be on the safe side, we specify this file here explicitly
+			tls_trusted_ca_certs /data/caddy/pki/authorities/local/root.crt
+		}
+	}
+}
+
+# Example entry for another service being reverse proxied by Caddy
+# In this case: Miniflux RSS
+reader.domain.tld {
+	reverse_proxy http://miniflux:8080
+}

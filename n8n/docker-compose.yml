@@ -1,0 +1,47 @@
+version: "3.8"
+
+volumes:
+  n8n-userdata:
+    name: n8n-userdata
+    external: true
+  n8n-db:
+    name: n8n-pgdb
+    external: true
+  
+networks:
+  proxy-network:
+    external: true
+
+services: 
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - n8n-userdata:/home/node/.n8n
+    networks:
+      - default
+      - proxy-network
+    env_file:
+      - n8n.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - n8n-db:/var/lib/postgresql/data
+    networks:
+      - default
+    env_file:
+      - n8n.env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "n8n"]
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 10

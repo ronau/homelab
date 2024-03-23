@@ -1,0 +1,55 @@
+{
+	# debug
+
+	# Trust proxy servers, 
+	# so that the real client IP is parsed from HTTP headers (e.g. from X-Forwarded-For)
+	servers {
+        trusted_proxies static private_ranges  # private ranges means RFC 1918 IP addresses
+    }
+
+	# The ACME server where certs should be fetched from
+	acme_ca https://proxy/acme/local/directory
+
+	# The trusted cert for the ACME endpoint (extracted from proxy Caddy)
+	# When the cert is bind mount (via docker-compose.yml) to the well-known cert directory
+	# it's not required to specify it here.    Leaving it here anyway for clarity.
+	acme_ca_root /etc/ssl/certs/proxy_ca_root.crt
+}
+
+https://ncweb {
+	root * /var/www/html
+	encode gzip zstd
+	file_server
+	log {
+		output file /var/log/nextcloud_access.log
+	}
+
+	php_fastcgi ncapp:9000 {
+		env front_controller_active true # Remove index.php form url
+	}
+
+	header {
+		# enable HSTS
+		# Strict-Transport-Security max-age=31536000;
+	}
+
+	redir /.well-known/carddav /remote.php/dav 301
+	redir /.well-known/caldav /remote.php/dav 301
+
+	# .htaccess / data / config / ... shouldn't be accessible from outside
+	@forbidden {
+		path /.htaccess
+		path /data/*
+		path /config/*
+		path /db_structure
+		path /.xml
+		path /README
+		path /3rdparty/*
+		path /lib/*
+		path /templates/*
+		path /occ
+		path /console.php
+	}
+
+	respond @forbidden 404
+}

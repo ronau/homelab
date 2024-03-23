@@ -1,0 +1,18 @@
+## Dynamic configuration
+
+http:
+  routers:
+    testing-https:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`testing.domain.tld`)"
+      service: "anotherhost-80"
+      tls:
+        options: default
+        certResolver: le-staging
+
+  services:
+    anotherhost-80:
+      loadBalancer:
+        servers:
+          - url: "http://anotherhost:80"

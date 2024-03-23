@@ -1,0 +1,31 @@
+version: "3.8"
+
+volumes:
+  db:
+    name: mariadb-db
+    external: true
+
+networks:
+  mariadb-network:
+    name: mariadb-network
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-read-only-compressed=OFF
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - mariadb-network
+    ports:
+      - 33060:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_ROOT_HOST
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD

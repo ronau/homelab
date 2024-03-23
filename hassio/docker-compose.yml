@@ -1,0 +1,17 @@
+version: "3.8"
+
+volumes:
+  hassioconfig:
+    name: hassio-config
+    external: true
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    volumes:
+      - hassioconfig:/config
+      - /etc/localtime:/etc/localtime:ro
