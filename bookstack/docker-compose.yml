@@ -1,0 +1,46 @@
+version: "3.8"
+
+volumes:
+  mysql-data:
+    name: bookstack-mysql-data
+    external: true
+  uploads:
+    name: bookstack-uploads
+    external: true
+  storage-uploads:
+    name: bookstack-storage-uploads
+    external: true
+  
+networks:
+  proxy-network:
+    external: true
+
+services: 
+  bookstack:
+    image: solidnerd/bookstack:24.2.2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+      - proxy-network
+    env_file:
+      - bookstack.env
+    volumes:
+      - uploads:/var/www/bookstack/public/uploads
+      - storage-uploads:/var/www/bookstack/storage/uploads
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - default
+    env_file:
+      - path: ./bookstack-initial.env
+        required: false
