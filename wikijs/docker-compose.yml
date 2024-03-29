@@ -1,0 +1,39 @@
+volumes:
+  db-data:
+    name: wikijs-pgdb
+    external: true
+
+networks:
+  proxy-network:
+    external: true
+
+services:
+  wikijs:
+    image: ghcr.io/requarks/wiki:2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+      - proxy-network
+    env_file:
+      - wikijs.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    env_file:
+      - path: ./wikijs-initial.env
+        required: false
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      start_period: 30s
