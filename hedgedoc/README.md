@@ -53,3 +53,12 @@ docker compose logs -f
 After the first startup, you can delete the `hedgedoc-initial.env` file, it's not required anymore since the database user has been created during first startup.
 The file is set as optional because of the added `required: false` in the compose file, so the services will continue to startup properly, even if the referenced file is missing.
 This feature was introduced with docker compose 2.24.0.
+
+
+## Add users manually
+
+In case you have disabled the email registration (`CMD_ALLOW_EMAIL_REGISTER`), you can create user manually from the commandline on the docker host:
+
+```
+docker exec -it hedgedoc-hedgedoc-1 /hedgedoc/bin/manage_users --add user@domain.tld
+```
