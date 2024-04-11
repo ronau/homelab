@@ -1,6 +1,7 @@
-version: "3.8"
-
 volumes:
+  db:
+    name: nextcloud-mariadb
+    external: true
   appbase:
     name: nextcloud-appbase
     external: true
@@ -14,8 +15,6 @@ volumes:
     name: nextcloud-caddydata
   
 networks:
-  mariadb-network:
-    external: true
   proxy-network:
     external: true
 
@@ -23,6 +22,18 @@ services:
   ncredis:
     image: redis:alpine
     restart: unless-stopped
+
+  mariadb:
+    image: mariadb
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-read-only-compressed=OFF
+    volumes:
+      - db:/var/lib/mysql
+    env_file:
+      - path: ./nextcloud-initial.env
+        required: false
   
   ncapp:
     image: nextcloud:28-fpm-alpine
@@ -34,9 +45,6 @@ services:
       - config:/var/www/html/config
       - data:/var/www/data
       - ./phpfpm-accesslog-format.conf:/usr/local/etc/php-fpm.d/zz-logformat.conf
-    networks:
-      - default
-      - mariadb-network
     environment:
       - REDIS_HOST=ncredis
       - TRUSTED_PROXIES=192.168.0.0/16 172.16.0.0/12
@@ -44,6 +52,7 @@ services:
       - PHP_UPLOAD_LIMIT=1024M
     depends_on:
       - ncredis
+      - mariadb
 
   ncweb:
     image: caddy:2.7

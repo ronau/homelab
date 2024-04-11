@@ -9,10 +9,13 @@ Here Nextcloud is running based on four services: PHP-FPM running the Nextcloud 
 
 There are also Nextcloud Docker versions relying on Apache as webserver. However, I wanted to work with Caddy again, as I use it already as reverse proxy and two Caddy instances would integrate very well.
 
-The **MariaDB** server is managed separately. The idea is to have it as a shared database server on the Home Network, in case other services need one as well.
-There are good reasons why every application/service should use its own database server. However, in this case most of the home services will be running on (probably just one and the same) Raspberry Pi. So it might make sense to have a look and try to save some resources (hence a shared MariaDB).
+The **MariaDB** server is set up during the first startup. For this, copy `nextcloud-initial.sample.env` to `nextcloud-initial.env`. Edit the copy and set the MariaDB root password as well as username, password and database name for the Nextcloud database. 
 
-The `nextcloud:fpm-alpine` image contains PHP-FPM based on Alpine Linux and it also contains the Nextcloud application files. It needs access to the MariaDB, which is sitting in its own network.
+After the first startup, you can delete the `nextcloud-initial.env` file, it's not required anymore since the database and the users have successfully been created.
+The file is set as optional because of the added `required: false` in the compose file, so the services will continue to startup properly, even if the referenced file is missing.
+This feature was introduced with docker compose 2.24.0.
+
+The `nextcloud:fpm-alpine` image contains PHP-FPM based on Alpine Linux and it also contains the Nextcloud application files.
 
 The **web server** (Caddy) just needs access to the Nextcloud directory in order to be able to serve the static files. It's sufficient, though, to mount them read-only.
 In addition you have to bind mount the Caddyfile as well as the root certificate of your own internal CA, which is running on the reverse proxy Caddy. That way, this Caddy will automatically acquire a certificate from the ACME server running on the proxy. So eventually the connection between proxy and backend web server will be transport encrypted, too. Obviously, the web server needs to join both the nextcloud network (default) as well as proxy network.
