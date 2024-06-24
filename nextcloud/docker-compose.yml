@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
 
   mariadb:
-    image: mariadb
+    image: mariadb:11.4
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
