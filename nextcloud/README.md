@@ -9,7 +9,7 @@ Here Nextcloud is running based on four services: PHP-FPM running the Nextcloud 
 
 There are also Nextcloud Docker versions relying on Apache as webserver. However, I wanted to work with Caddy again, as I use it already as reverse proxy and two Caddy instances would integrate very well.
 
-The **MariaDB** server is set up during the first startup. For this, copy `nextcloud-initial.sample.env` to `nextcloud-initial.env`. Edit the copy and set the MariaDB root password as well as username, password and database name for the Nextcloud database. 
+The **MariaDB** server is set up during the first startup. For this, copy `nextcloud-initial.sample.env` to `nextcloud-initial.env`. Edit the copy and set the MariaDB root password as well as username, password and database name for the Nextcloud database.
 
 After the first startup, you can delete the `nextcloud-initial.env` file, it's not required anymore since the database and the users have successfully been created.
 The file is set as optional because of the added `required: false` in the compose file, so the services will continue to startup properly, even if the referenced file is missing.
@@ -80,7 +80,9 @@ docker-compose up -d
 ```
 
 
-## Adding missing packages to Alpine image
+## Additional tips and nice-to-know stuff
+
+### Adding missing packages to Alpine image
 
 Sometimes there are warning messages in the Admin section which relate to missing packages in the container, e.g. missing imagemagick support for SVG images.
 
@@ -91,3 +93,8 @@ Instead it is easier to just install the missing package manually once after eve
 ```
 docker exec -it nextcloud-ncapp-1 /bin/sh -c 'apk update; apk add imagemagick-svg'
 ```
+
+
+### Remove signup banner on publicly shared links
+
+https://help.nextcloud.com/t/solved-how-to-remove-bottom-banner-on-shared-links-theming/168249
