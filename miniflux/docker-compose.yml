@@ -18,10 +18,8 @@ services:
       - proxy-network
     env_file:
       - miniflux.env
-    environment:
-      - CREATE_ADMIN
-      - ADMIN_USERNAME
-      - ADMIN_PASSWORD
+      - path: ./miniflux-initial.env
+        required: false
     healthcheck:
       test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
     depends_on:
@@ -36,9 +34,9 @@ services:
       - miniflux-db:/var/lib/postgresql/data
     networks:
       - default
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
+    env_file:
+      - path: ./miniflux-initial.env
+        required: false
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "miniflux"]
       interval: 10s

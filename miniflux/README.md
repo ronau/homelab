@@ -7,7 +7,7 @@ Credits to https://lukesingham.com/rss-feed-reader/
 
 ### Configure DB, usernames and passwords
 
-Copy `miniflux-initial.sample.env` to `miniflux-initial.env`. Edit the copy and set usernames and passwords. 
+Copy `miniflux-initial.sample.env` to `miniflux-initial.env`. Edit the copy and set usernames and passwords.
 These values will be used only during the first startup.
 
 Copy `miniflux.sample.env` to `miniflux.env`. Edit the file and adjust the database connection string according to your actual database user and password (as set in the other env file):
@@ -22,17 +22,18 @@ All these values will be used during every startup.
 
 ### Startup
 
-For the first startup, refer to the environment file containing initial passwords etc.:
-```
-docker compose --env-file miniflux-initial.env up -d
-```
-
-For subsequent startups you don't need to point to this file anymore, just the simple:
+For the first startup, just run:
 
 ```
 docker compose up -d
 ```
 
-The `miniflux.env` file is referred in the docker-compose.yml and will be used during every startup.
+Check the logs to make sure the service has started properly:
 
-For security reasons you can now delete the `miniflux-initial.env`.
+```
+docker compose logs -f
+```
+
+After the first startup, you can delete the `miniflux-initial.env` file, it's not required anymore since the database and admin user has been created during first startup.
+The file is set as optional because of the added `required: false` in the compose file, so the services will continue to startup properly, even if the referenced file is missing.
+This feature was introduced with docker compose 2.24.0.
