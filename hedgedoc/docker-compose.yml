@@ -12,7 +12,7 @@ networks:
 
 services:
   hedgedoc:
-    image: quay.io/hedgedoc/hedgedoc:1.9.9-alpine
+    image: quay.io/hedgedoc/hedgedoc:1.10.0-alpine
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -27,7 +27,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

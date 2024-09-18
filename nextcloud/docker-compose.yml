@@ -13,7 +13,7 @@ volumes:
     external: true
   caddydata:
     name: nextcloud-caddydata
-  
+
 networks:
   proxy-network:
     external: true
@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
 
   mariadb:
-    image: mariadb:11.4
+    image: mariadb:11.5
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -34,9 +34,9 @@ services:
     env_file:
       - path: ./nextcloud-initial.env
         required: false
-  
+
   ncapp:
-    image: nextcloud:28-fpm-alpine
+    image: nextcloud:29-fpm-alpine
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -55,7 +55,7 @@ services:
       - mariadb
 
   ncweb:
-    image: caddy:2.7
+    image: caddy:2.8
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

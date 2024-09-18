@@ -1,5 +1,3 @@
-version: "3.8"
-
 volumes:
   ld-data:
     name: linkding-data

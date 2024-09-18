@@ -1,15 +1,13 @@
-version: "3.8"
-
 volumes:
   miniflux-db:
     name: miniflux-pgdb
     external: true
-  
+
 networks:
   proxy-network:
     external: true
 
-services: 
+services:
   miniflux:
     image: miniflux/miniflux:latest
     restart: unless-stopped
@@ -30,7 +28,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres:14
+    image: postgres:16
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

@@ -1,5 +1,3 @@
-version: "3.8"
-
 volumes:
   caddydata:
     name: proxy-caddydata
@@ -12,7 +10,7 @@ networks:
 services:
   caddy:
     container_name: proxy
-    image: caddy:2.7
+    image: caddy:2.8
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

@@ -1,5 +1,3 @@
-version: "3.8"
-
 volumes:
   n8n-userdata:
     name: n8n-userdata
@@ -7,12 +5,12 @@ volumes:
   n8n-db:
     name: n8n-pgdb
     external: true
-  
+
 networks:
   proxy-network:
     external: true
 
-services: 
+services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
     restart: unless-stopped
@@ -29,7 +27,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres:15
+    image: postgres:16
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
