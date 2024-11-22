@@ -36,7 +36,7 @@ services:
         required: false
 
   ncapp:
-    image: nextcloud:29-fpm-alpine
+    image: nextcloud:30-fpm-alpine
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
